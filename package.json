@@ -9,23 +9,23 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "framer-motion": "latest",
-    "next": "15",
-    "nodemailer": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "zod": "latest"
+    "framer-motion": "12.40.0",
+    "next": "15.5.19",
+    "nodemailer": "9.0.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "zod": "4.4.3"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "latest",
-    "@tailwindcss/postcss": "latest",
-    "@types/node": "latest",
-    "@types/nodemailer": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "eslint": "latest",
-    "eslint-config-next": "latest",
-    "tailwindcss": "latest",
-    "typescript": "latest"
+    "@eslint/eslintrc": "3.3.5",
+    "@tailwindcss/postcss": "4.3.1",
+    "@types/node": "25.0.3",
+    "@types/nodemailer": "7.0.4",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.39.4",
+    "eslint-config-next": "15.5.19",
+    "tailwindcss": "4.3.1",
+    "typescript": "5.9.3"
   }
 }
