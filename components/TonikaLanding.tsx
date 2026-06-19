@@ -1,16 +1,53 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import Image from "next/image";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { company, contactEmail, content, localeLabels, locales, type Locale } from "@/lib/content";
 
 type Copy = (typeof content)[Locale];
 
-const galleryPrompts = [
-  "White refrigerated semi-truck with neon pink accents, wet black studio floor, cinematic luxury lighting.",
-  "Swiss alpine route at blue hour with a premium refrigerated truck and subtle pink light trails.",
-  "Futuristic cold-chain operations center with route intelligence dashboards and glass control room.",
-  "Macro fleet detail: refrigerated trailer texture, cold vapor, black reflections, pink edge light."
+type GalleryImage = {
+  src: string;
+  title: string;
+  tag: string;
+  tall?: boolean;
+};
+
+const galleryImages: GalleryImage[] = [
+  { src: "/images/tonika-gallery-01-alpine-route.png", title: "Swiss alpine route", tag: "International routes", tall: true },
+  { src: "/images/tonika-gallery-02-logistics-hub.png", title: "Cold-chain logistics hub", tag: "Operations" },
+  { src: "/images/tonika-gallery-03-scania-truck.png", title: "Scania refrigerated tractor", tag: "Fleet", tall: true },
+  { src: "/images/tonika-gallery-04-volvo-truck.png", title: "Volvo night linehaul", tag: "Fleet" },
+  { src: "/images/tonika-gallery-05-schmitz-trailer.png", title: "Schmitz refrigerated trailer", tag: "Thermo-frigo" },
+  { src: "/images/tonika-gallery-06-loading-dock.png", title: "Temperature-controlled docks", tag: "Handling", tall: true },
+  { src: "/images/tonika-gallery-07-temperature-control.png", title: "Temperature command room", tag: "Monitoring" },
+  { src: "/images/tonika-gallery-08-fleet-lineup.png", title: "Fleet lineup", tag: "Capacity", tall: true },
+  { src: "/images/tonika-gallery-09-trailer-detail.png", title: "Refrigeration detail", tag: "Precision" },
+  { src: "/images/tonika-gallery-10-night-route.png", title: "Night tunnel route", tag: "24/7" },
+  { src: "/images/tonika-gallery-11-driver-cabin.png", title: "Premium driver cockpit", tag: "People" },
+  { src: "/images/tonika-gallery-12-cold-chain.png", title: "Cold-chain loading", tag: "Cargo integrity", tall: true }
+];
+
+const fleetVisuals = [
+  {
+    name: "Scania refrigerated tractors",
+    image: "/images/tonika-gallery-03-scania-truck.png",
+    spec: "EURO 6 / GPS / Thermo-ready",
+    copy: "Long-haul refrigerated power for precise Slovenia-Switzerland-EU routes."
+  },
+  {
+    name: "Volvo linehaul trucks",
+    image: "/images/tonika-gallery-04-volvo-truck.png",
+    spec: "EURO 5-6 / Telematics / 24/7",
+    copy: "Premium route stability, driver comfort and reliable international timing."
+  },
+  {
+    name: "Schmitz refrigerated trailers",
+    image: "/images/tonika-gallery-05-schmitz-trailer.png",
+    spec: "33-66 pallets / Dual-temp / ATP",
+    copy: "Certified refrigerated capacity for food, pharma, frozen and high-value cargo."
+  }
 ];
 
 function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
@@ -56,10 +93,19 @@ function Particles() {
   );
 }
 
+function formatCounter(value: string, current: number) {
+  if (value.includes("/")) return value;
+
+  const hasEuro = value.includes("€");
+  const suffix = value.endsWith("+") ? "+" : value.endsWith("%") ? "%" : "";
+  const formatted = hasEuro || current >= 10000 ? current.toLocaleString("en-US") : String(current);
+
+  return `${hasEuro ? "€" : ""}${formatted}${suffix}`;
+}
+
 function Counter({ value }: { value: string }) {
   const numeric = Number(value.replace(/[^0-9]/g, ""));
-  const suffix = value.replace(/[0-9]/g, "");
-  const [display, setDisplay] = useState(value.includes("/") ? value : "0");
+  const [display, setDisplay] = useState(value.includes("/") ? value : formatCounter(value, 0));
 
   return (
     <motion.span
@@ -75,7 +121,7 @@ function Counter({ value }: { value: string }) {
         const interval = window.setInterval(() => {
           current += 1;
           const next = Math.round((numeric / steps) * current);
-          setDisplay(`${next}${suffix}`);
+          setDisplay(formatCounter(value, next));
           if (current >= steps) {
             window.clearInterval(interval);
             setDisplay(value);
@@ -183,10 +229,81 @@ function ContactForm({ copy }: { copy: Copy["contact"] }) {
   );
 }
 
+function Lightbox({ selected, onClose, onSelect }: { selected: number | null; onClose: () => void; onSelect: (index: number) => void }) {
+  useEffect(() => {
+    if (selected === null) return;
+    const activeIndex = selected;
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+      if (event.key === "ArrowRight") onSelect((activeIndex + 1) % galleryImages.length);
+      if (event.key === "ArrowLeft") onSelect((activeIndex - 1 + galleryImages.length) % galleryImages.length);
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [onClose, onSelect, selected]);
+
+  return (
+    <AnimatePresence>
+      {selected !== null && (
+        <motion.div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/92 p-4 backdrop-blur-2xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        >
+          <button className="absolute right-5 top-5 z-10 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white" onClick={onClose}>
+            Close
+          </button>
+          <button
+            className="absolute left-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-white/15 bg-white/10 px-4 py-3 text-white md:block"
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect((selected - 1 + galleryImages.length) % galleryImages.length);
+            }}
+          >
+            Prev
+          </button>
+          <button
+            className="absolute right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-white/15 bg-white/10 px-4 py-3 text-white md:block"
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect((selected + 1) % galleryImages.length);
+            }}
+          >
+            Next
+          </button>
+          <motion.div
+            className="relative h-[78vh] w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.04]"
+            initial={{ scale: 0.96, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.96, y: 20 }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Image src={galleryImages[selected].src} alt={galleryImages[selected].title} fill sizes="100vw" className="object-contain" />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6">
+              <p className="text-xs font-black uppercase tracking-[0.28em] text-[#ff4fa3]">{galleryImages[selected].tag}</p>
+              <h3 className="mt-2 text-2xl font-semibold text-white">{galleryImages[selected].title}</h3>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export function TonikaLanding({ locale }: { locale: Locale }) {
   const copy = content[locale] as Copy;
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const { scrollYProgress } = useScroll();
-  const heroY = useTransform(scrollYProgress, [0, 0.35], [0, 180]);
+  const heroY = useTransform(scrollYProgress, [0, 0.42], [0, 160]);
+  const heroTextY = useTransform(scrollYProgress, [0, 0.34], [0, -48]);
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -207,50 +324,34 @@ export function TonikaLanding({ locale }: { locale: Locale }) {
         </nav>
       </header>
 
-      <section id="top" className="relative flex min-h-screen items-center px-5 pb-20 pt-32 md:px-8">
+      <section id="top" className="relative min-h-screen overflow-hidden px-5 md:px-8">
         <Particles />
-        <motion.div style={{ y: heroY }} className="absolute inset-x-0 top-24 mx-auto h-[42rem] max-w-6xl rounded-full bg-[#ff4fa3]/20 blur-[120px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(255,255,255,0.16),transparent_22rem)]" />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.04fr_0.96fr]">
-          <Reveal>
-            <div>
-              <p className="mb-5 text-xs font-bold uppercase tracking-[0.35em] text-[#ff4fa3]">{copy.hero.eyebrow}</p>
-              <h1 className="text-balance font-[var(--font-manrope)] text-5xl font-black leading-[0.92] tracking-[-0.06em] text-white md:text-7xl xl:text-8xl">
-                {copy.hero.title}
-              </h1>
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-white/70 md:text-xl">{copy.hero.lead}</p>
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-                <a href="#contact" className="pink-glow rounded-full bg-[#ff4fa3] px-7 py-4 text-center text-sm font-bold uppercase tracking-[0.22em] text-black">
-                  {copy.hero.primary}
-                </a>
-                <a href="#fleet" className="rounded-full border border-white/15 px-7 py-4 text-center text-sm font-bold uppercase tracking-[0.22em] text-white/80 backdrop-blur">
-                  {copy.hero.secondary}
-                </a>
-              </div>
-            </div>
-          </Reveal>
+        <motion.div style={{ y: heroY }} className="absolute inset-0">
+          <Image src="/images/tonika-hero-truck.png" alt="Premium refrigerated TONIKA 2 truck" fill priority sizes="100vw" className="object-cover" />
+        </motion.div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_45%,rgba(255,79,163,0.14),transparent_25rem),linear-gradient(90deg,rgba(0,0,0,0.98)_0%,rgba(0,0,0,0.78)_39%,rgba(0,0,0,0.2)_74%),linear-gradient(180deg,rgba(0,0,0,0.1)_0%,#030305_100%)]" />
+        <motion.div className="absolute left-1/2 top-24 h-[34rem] w-[34rem] rounded-full bg-[#ff4fa3]/25 blur-[130px]" animate={{ scale: [1, 1.18, 1], opacity: [0.45, 0.8, 0.45] }} transition={{ duration: 8, repeat: Infinity }} />
 
-          <Reveal delay={0.15}>
-            <div className="glass relative min-h-[30rem] overflow-hidden rounded-[2.5rem] p-5">
-              <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,79,163,0.28),transparent_34%),radial-gradient(circle_at_64%_34%,rgba(255,255,255,0.18),transparent_20rem)]" />
-              <motion.div
-                animate={{ y: [0, -14, 0], rotate: [0, -0.7, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute bottom-8 left-6 right-6 h-52 rounded-[2rem] border border-white/15 bg-gradient-to-br from-white via-zinc-300 to-zinc-700 shadow-2xl"
-              >
-                <div className="absolute -top-16 left-8 h-24 w-52 rounded-t-[2rem] bg-gradient-to-br from-zinc-100 to-zinc-500" />
-                <div className="absolute -top-10 left-20 h-12 w-24 rounded-xl bg-black/80" />
-                <div className="absolute left-6 top-16 h-1.5 w-[82%] bg-[#ff4fa3] pink-glow" />
-                <div className="absolute bottom-6 left-12 h-14 w-14 rounded-full border-[10px] border-black bg-zinc-700" />
-                <div className="absolute bottom-6 right-16 h-14 w-14 rounded-full border-[10px] border-black bg-zinc-700" />
-              </motion.div>
-              <div className="relative z-10 max-w-sm rounded-[1.5rem] border border-white/10 bg-black/35 p-5 backdrop-blur-xl">
-                <p className="text-xs uppercase tracking-[0.28em] text-white/50">Cold Chain OS</p>
-                <p className="mt-4 text-3xl font-semibold">+25°C / -25°C</p>
-                <p className="mt-2 text-sm text-white/60">Realtime temperature, route and documentation confidence.</p>
-              </div>
-            </div>
-          </Reveal>
+        <div className="relative mx-auto flex min-h-screen max-w-7xl items-center pb-20 pt-32">
+          <motion.div style={{ y: heroTextY }} className="max-w-4xl">
+            <motion.p className="mb-5 inline-flex rounded-full border border-[#ff4fa3]/30 bg-[#ff4fa3]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.32em] text-[#ff4fa3] backdrop-blur" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+              {copy.hero.eyebrow}
+            </motion.p>
+            <motion.h1 className="text-balance font-[var(--font-manrope)] text-6xl font-black leading-[0.86] tracking-[-0.075em] text-white md:text-8xl xl:text-[8.8rem]" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.08 }}>
+                {copy.hero.title}
+            </motion.h1>
+            <motion.p className="mt-8 max-w-2xl text-lg leading-8 text-white/72 md:text-2xl md:leading-10" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.16 }}>
+              {copy.hero.lead}
+            </motion.p>
+            <motion.div className="mt-10 flex flex-col gap-4 sm:flex-row" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.24 }}>
+              <a href="#contact" className="pink-glow rounded-full bg-[#ff4fa3] px-8 py-4 text-center text-sm font-black uppercase tracking-[0.24em] text-black transition hover:scale-[1.03]">
+                {copy.hero.primary}
+              </a>
+              <a href="#fleet" className="rounded-full border border-white/20 bg-white/[0.04] px-8 py-4 text-center text-sm font-black uppercase tracking-[0.24em] text-white/90 backdrop-blur transition hover:border-[#ff4fa3]/60 hover:text-white">
+                {copy.hero.secondary}
+              </a>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -299,20 +400,38 @@ export function TonikaLanding({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      <section id="fleet" className="relative px-5 py-24 md:px-8">
-        <div className="absolute inset-x-0 top-1/3 h-96 bg-[#ff4fa3]/10 blur-[100px]" />
+      <section id="fleet" className="relative px-5 py-28 md:px-8">
+        <div className="absolute inset-x-0 top-1/4 h-[34rem] bg-[#ff4fa3]/10 blur-[110px]" />
         <div className="relative mx-auto max-w-7xl">
           <Reveal>
             <p className="text-sm font-bold uppercase tracking-[0.32em] text-[#ff4fa3]">{copy.fleet.eyebrow}</p>
-            <h2 className="mt-5 max-w-5xl font-[var(--font-manrope)] text-4xl font-black tracking-[-0.04em] md:text-6xl">{copy.fleet.title}</h2>
+            <h2 className="mt-5 max-w-5xl font-[var(--font-manrope)] text-5xl font-black tracking-[-0.055em] md:text-7xl">{copy.fleet.title}</h2>
           </Reveal>
-          <div className="mt-12 grid gap-5 lg:grid-cols-4">
+          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+            {fleetVisuals.map((fleet, index) => (
+              <Reveal key={fleet.name} delay={index * 0.1}>
+                <article className="glass group overflow-hidden rounded-[2.4rem] transition duration-500 hover:-translate-y-3 hover:border-[#ff4fa3]/50">
+                  <div className="relative h-72 overflow-hidden">
+                    <Image src={fleet.image} alt={fleet.name} fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover transition duration-700 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                    <span className="absolute left-5 top-5 rounded-full border border-white/15 bg-black/40 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#ff4fa3] backdrop-blur">
+                      {fleet.spec}
+                    </span>
+                  </div>
+                  <div className="p-7">
+                    <h3 className="text-3xl font-semibold tracking-[-0.04em]">{fleet.name}</h3>
+                    <p className="mt-4 leading-7 text-white/62">{fleet.copy}</p>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-4">
             {copy.fleet.cards.map(([title, text], index) => (
-              <Reveal key={title} delay={index * 0.08}>
-                <div className="glass min-h-72 rounded-[2rem] p-6">
-                  <div className="mb-12 h-28 rounded-[1.5rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(255,79,163,0.42),rgba(255,255,255,0.12))]" />
-                  <h3 className="text-3xl font-semibold">{title}</h3>
-                  <p className="mt-4 text-sm leading-6 text-white/60">{text}</p>
+              <Reveal key={title} delay={index * 0.06}>
+                <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.035] p-5 backdrop-blur transition hover:border-[#ff4fa3]/45 hover:bg-[#ff4fa3]/10">
+                  <h3 className="text-2xl font-semibold">{title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-white/55">{text}</p>
                 </div>
               </Reveal>
             ))}
@@ -320,36 +439,47 @@ export function TonikaLanding({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      <section id="stats" className="px-5 py-24 md:px-8">
-        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-5">
-          {copy.stats.map(([value, label], index) => (
-            <Reveal key={label} delay={index * 0.06}>
-              <div className="glass rounded-[2rem] p-6">
-                <Counter value={value} />
-                <p className="mt-4 text-sm uppercase tracking-[0.18em] text-white/50">{label}</p>
-              </div>
-            </Reveal>
-          ))}
+      <section id="stats" className="px-5 py-28 md:px-8">
+        <div className="mx-auto max-w-7xl rounded-[2.5rem] border border-white/10 bg-[linear-gradient(135deg,rgba(255,79,163,0.18),rgba(255,255,255,0.035))] p-4 backdrop-blur-2xl md:p-6">
+          <div className="grid gap-4 md:grid-cols-5">
+            {copy.stats.map(([value, label], index) => (
+              <Reveal key={label} delay={index * 0.06}>
+                <div className="min-h-40 rounded-[2rem] border border-white/10 bg-black/35 p-6">
+                  <Counter value={value} />
+                  <p className="mt-5 text-xs font-bold uppercase tracking-[0.2em] text-white/48">{label}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section id="gallery" className="px-5 py-24 md:px-8">
+      <section id="gallery" className="px-5 py-28 md:px-8">
         <div className="mx-auto max-w-7xl">
           <Reveal>
-            <h2 className="max-w-4xl font-[var(--font-manrope)] text-4xl font-black tracking-[-0.04em] md:text-6xl">{copy.galleryTitle}</h2>
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-white/65">{copy.galleryLead}</p>
+            <h2 className="max-w-4xl font-[var(--font-manrope)] text-5xl font-black tracking-[-0.055em] md:text-7xl">{copy.galleryTitle}</h2>
+            <p className="mt-6 max-w-3xl text-lg leading-8 text-white/65">{copy.galleryLead}</p>
           </Reveal>
-          <div className="mt-12 grid gap-5 md:grid-cols-2">
-            {galleryPrompts.map((prompt, index) => (
-              <Reveal key={prompt} delay={index * 0.08}>
-                <div className="glass relative min-h-80 overflow-hidden rounded-[2rem] p-6">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,79,163,0.38),transparent_18rem),linear-gradient(135deg,rgba(255,255,255,0.12),transparent)]" />
-                  <div className="relative z-10 flex h-full flex-col justify-end">
-                    <span className="mb-24 text-xs font-black uppercase tracking-[0.26em] text-[#ff4fa3]">AI prompt 0{index + 1}</span>
-                    <p className="text-xl leading-8 text-white/80">{prompt}</p>
-                  </div>
+          <div className="mt-14 columns-1 gap-5 sm:columns-2 lg:columns-3">
+            {galleryImages.map((image, index) => (
+              <motion.button
+                key={image.src}
+                type="button"
+                onClick={() => setSelectedImage(index)}
+                className={`group relative mb-5 block w-full overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] text-left ${image.tall ? "h-[30rem]" : "h-72"}`}
+                initial={{ opacity: 0, y: 36 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.7, delay: (index % 3) * 0.05 }}
+                whileHover={{ y: -6 }}
+              >
+                <Image src={image.src} alt={image.title} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/15 to-transparent opacity-90" />
+                <div className="absolute inset-x-0 bottom-0 p-5">
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#ff4fa3]">{image.tag}</p>
+                  <h3 className="mt-2 text-xl font-semibold text-white">{image.title}</h3>
                 </div>
-              </Reveal>
+              </motion.button>
             ))}
           </div>
         </div>
@@ -382,6 +512,8 @@ export function TonikaLanding({ locale }: { locale: Locale }) {
           <p>{company.taxId}</p>
         </div>
       </footer>
+
+      <Lightbox selected={selectedImage} onClose={() => setSelectedImage(null)} onSelect={setSelectedImage} />
     </main>
   );
 }

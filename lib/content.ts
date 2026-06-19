@@ -82,13 +82,13 @@ export const content = {
     stats: [
       ["1996+", "Ustanovitev podjetja"],
       ["25+", "Drzav v dosegu"],
-      ["1000000€", "Zavarovanje tovora"],
+      ["€1,000,000", "Zavarovanje tovora"],
       ["24/7", "Transportna razpolozljivost"],
       ["100%", "Nadzor temperature"]
     ],
-    galleryTitle: "Vizualna smer za novo generacijo transporta.",
+    galleryTitle: "Transportna izkušnja v filmski ostrini.",
     galleryLead:
-      "Originalne AI usmeritve zdruzujejo belo-roza hladilniske kompozicije, svicarske gorske koridorje in premium operativne centre.",
+      "Galerija zdruzuje alpske relacije, hladilniske priklopnike, nocne operacije in nadzorne centre v premium vizualni zgodbi znamke TONIKA 2.",
     contact: {
       title: "Odprimo zanesljivo relacijo.",
       lead: "Posljite povprasevanje in pripravili bomo transportno resitev glede na temperaturo, rok, dokumentacijo in destinacijo.",
@@ -157,13 +157,13 @@ export const content = {
     stats: [
       ["1996+", "Company founded"],
       ["25+", "Countries served"],
-      ["1000000€", "Cargo insurance"],
+      ["€1,000,000", "Cargo insurance"],
       ["24/7", "Transport availability"],
       ["100%", "Temperature monitoring"]
     ],
-    galleryTitle: "Visual direction for the next generation of transport.",
+    galleryTitle: "A cinematic view of precision logistics.",
     galleryLead:
-      "Original AI directions combine white-pink refrigerated compositions, Swiss mountain corridors, and premium logistics operation centers.",
+      "A premium gallery of alpine routes, refrigerated trailers, night operations, fleet details, and control-room visibility across the TONIKA 2 transport experience.",
     contact: {
       title: "Open a reliable route.",
       lead: "Send an inquiry and we will prepare a transport solution around your temperature, timeline, documentation, and destination.",
@@ -232,13 +232,13 @@ export const content = {
     stats: [
       ["1996+", "Gruendung"],
       ["25+", "Bediente Laender"],
-      ["1000000€", "Warenversicherung"],
+      ["€1,000,000", "Warenversicherung"],
       ["24/7", "Transportverfuegbarkeit"],
       ["100%", "Temperaturueberwachung"]
     ],
-    galleryTitle: "Visuelle Richtung fuer die naechste Transportgeneration.",
+    galleryTitle: "Praezisionslogistik in filmischer Qualitaet.",
     galleryLead:
-      "Originale KI-Richtungen verbinden weiss-pinke Kuehlfahrzeug-Kompositionen, Schweizer Alpenrouten und premium Logistikzentren.",
+      "Eine premium Galerie aus Alpenrouten, Kuehlaufliegern, Nachtoperationen, Fuhrparkdetails und Kontrollraum-Transparenz fuer die TONIKA 2 Transportwelt.",
     contact: {
       title: "Starten wir eine verlaessliche Route.",
       lead: "Senden Sie Ihre Anfrage. Wir entwickeln eine Transportloesung nach Temperatur, Termin, Dokumentation und Zielort.",
