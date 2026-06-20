@@ -56,11 +56,11 @@ function Particles() {
 function formatCounter(value: string, current: number) {
   if (value.includes("/")) return value;
 
-  const hasEuro = value.includes("?");
+  const hasEuro = value.includes("\u20ac");
   const suffix = value.endsWith("+") ? "+" : value.endsWith("%") ? "%" : "";
   const formatted = hasEuro || current >= 10000 ? current.toLocaleString("en-US") : String(current);
 
-  return `${hasEuro ? "?" : ""}${formatted}${suffix}`;
+  return `${hasEuro ? "\u20ac" : ""}${formatted}${suffix}`;
 }
 
 function Counter({ value }: { value: string }) {
@@ -69,7 +69,7 @@ function Counter({ value }: { value: string }) {
 
   return (
     <motion.span
-      className="block max-w-full whitespace-nowrap font-[var(--font-manrope)] text-[clamp(1.85rem,4vw,3rem)] font-black leading-none tracking-[-0.06em] text-white"
+      className="block max-w-full whitespace-nowrap text-center font-[var(--font-manrope)] text-[clamp(1.65rem,3.2vw,2.8rem)] font-black leading-none tracking-[-0.06em] text-white"
       onViewportEnter={() => {
         if (!numeric || value.includes("/")) {
           setDisplay(value);
@@ -290,31 +290,35 @@ export function TonikaLanding({ locale }: { locale: Locale }) {
 
       <section id="top" className="relative min-h-screen overflow-hidden px-5 md:px-8">
         <Particles />
-        <motion.div style={{ y: heroY }} className="absolute inset-0 scale-110">
-          <Image src="/images/hero-truck-alps.jpg" alt={copy.hero.title} fill priority sizes="100vw" className="object-cover object-[72%_center]" />
+        <motion.div style={{ y: heroY }} className="absolute inset-0">
+          <Image src="/images/hero-alps.webp" alt={copy.hero.title} fill priority sizes="100vw" className="object-cover object-center opacity-80" />
         </motion.div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_45%,rgba(255,79,163,0.22),transparent_24rem),linear-gradient(90deg,rgba(0,0,0,0.98)_0%,rgba(0,0,0,0.82)_40%,rgba(0,0,0,0.24)_76%),linear-gradient(180deg,rgba(0,0,0,0.12)_0%,#030305_100%)]" />
-        <motion.div className="absolute left-1/2 top-24 h-[34rem] w-[34rem] rounded-full bg-[#ff4fa3]/28 blur-[130px]" animate={{ scale: [1, 1.16, 1], opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 8, repeat: Infinity }} />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_45%,rgba(255,79,163,0.24),transparent_26rem),linear-gradient(90deg,rgba(0,0,0,0.96)_0%,rgba(0,0,0,0.76)_44%,rgba(0,0,0,0.18)_82%),linear-gradient(180deg,rgba(0,0,0,0.08)_0%,#030305_100%)]" />
+        <motion.div className="absolute right-0 top-20 h-[38rem] w-[38rem] rounded-full bg-[#ff4fa3]/24 blur-[130px]" animate={{ scale: [1, 1.16, 1], opacity: [0.45, 0.85, 0.45] }} transition={{ duration: 8, repeat: Infinity }} />
 
-        <div className="relative mx-auto flex min-h-screen max-w-7xl items-center pb-20 pt-32">
-          <motion.div style={{ y: heroTextY }} className="max-w-4xl">
+        <div className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-8 pb-20 pt-32 lg:grid-cols-[0.44fr_0.56fr]">
+          <motion.div style={{ y: heroTextY }} className="z-10 max-w-3xl">
             <motion.p className="mb-5 inline-flex rounded-full border border-[#ff4fa3]/35 bg-[#ff4fa3]/12 px-4 py-2 text-xs font-black uppercase tracking-[0.28em] text-[#ff4fa3] backdrop-blur" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
               {copy.hero.eyebrow}
             </motion.p>
-            <motion.h1 className="text-balance font-[var(--font-manrope)] text-5xl font-black leading-[0.88] tracking-[-0.07em] text-white md:text-8xl xl:text-[8.5rem]" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.08 }}>
+            <motion.h1 className="text-balance font-[var(--font-manrope)] text-[clamp(3rem,7.5vw,6.9rem)] font-black leading-[0.88] tracking-[-0.07em] text-white" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.08 }}>
               {copy.hero.title}
             </motion.h1>
-            <motion.p className="mt-8 max-w-2xl text-lg leading-8 text-white/76 md:text-2xl md:leading-10" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.16 }}>
+            <motion.p className="mt-8 max-w-2xl text-base leading-8 text-white/78 md:text-xl md:leading-9" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.16 }}>
               {copy.hero.lead}
             </motion.p>
-            <motion.div className="mt-10 flex flex-col gap-4 sm:flex-row" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.24 }}>
-              <a href="#contact" className="pink-glow rounded-full bg-[#ff4fa3] px-8 py-4 text-center text-sm font-black uppercase tracking-[0.2em] text-black transition hover:scale-[1.03]">
+            <motion.div className="mt-10 flex flex-col gap-4 min-[420px]:flex-row" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.24 }}>
+              <a href="#contact" className="pink-glow rounded-full bg-[#ff4fa3] px-7 py-4 text-center text-xs font-black uppercase tracking-[0.16em] text-black transition hover:scale-[1.03] sm:text-sm">
                 {copy.hero.primary}
               </a>
-              <a href="#fleet" className="rounded-full border border-white/20 bg-white/[0.05] px-8 py-4 text-center text-sm font-black uppercase tracking-[0.2em] text-white/90 backdrop-blur transition hover:border-[#ff4fa3]/60 hover:text-white">
+              <a href="#fleet" className="rounded-full border border-white/20 bg-white/[0.05] px-7 py-4 text-center text-xs font-black uppercase tracking-[0.16em] text-white/90 backdrop-blur transition hover:border-[#ff4fa3]/60 hover:text-white sm:text-sm">
                 {copy.hero.secondary}
               </a>
             </motion.div>
+          </motion.div>
+          <motion.div className="relative min-h-[42vh] lg:min-h-[68vh]" initial={{ opacity: 0, x: 60, scale: 0.96 }} animate={{ opacity: 1, x: 0, scale: 1 }} transition={{ duration: 1, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}>
+            <div className="absolute inset-0 rounded-[3rem] bg-[#ff4fa3]/20 blur-[80px]" />
+            <Image src="/images/hero-alps.webp" alt={copy.hero.secondary} fill priority sizes="(min-width: 1024px) 58vw, 100vw" className="relative object-contain object-center drop-shadow-[0_40px_100px_rgba(0,0,0,0.65)]" />
           </motion.div>
         </div>
       </section>
@@ -430,9 +434,9 @@ export function TonikaLanding({ locale }: { locale: Locale }) {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {copy.stats.map(([value, label], index) => (
               <Reveal key={label} delay={index * 0.06}>
-                <div className="flex min-h-40 flex-col justify-between overflow-hidden rounded-[2rem] border border-white/10 bg-black/35 p-5 sm:p-6">
+                <div className="flex min-h-40 flex-col items-center justify-center overflow-hidden rounded-[2rem] border border-white/10 bg-black/35 p-5 text-center sm:p-6">
                   <Counter value={value} />
-                  <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-white/48">{label}</p>
+                  <p className="mt-5 text-xs font-bold uppercase tracking-[0.14em] text-white/48">{label}</p>
                 </div>
               </Reveal>
             ))}
@@ -502,7 +506,9 @@ export function TonikaLanding({ locale }: { locale: Locale }) {
             <p className="text-white">{company.shortName}</p>
             <p>{company.street}</p>
             <p>{company.city}</p>
+            <p>{copy.footer.taxLabel}</p>
             <p>{company.taxId}</p>
+            <p>{copy.footer.registrationLabel}</p>
             <p>{company.registration}</p>
           </div>
           <div className="grid gap-2 leading-6">

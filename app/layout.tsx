@@ -17,34 +17,36 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://transporttonika2.com"),
   title: {
-    default: "TONIKA 2 | Premium Thermo Transport Europe",
+    default: "TONIKA 2 | Premium hladilni transport Evropa",
     template: "%s | TONIKA 2"
   },
   description:
-    "TONIKA 2 delivers premium thermo-frigo transport, Swiss route expertise, certified refrigerated fleet operations, and international logistics support across Europe.",
+    "TONIKA 2 izvaja premium hladilni transport, specializirane relacije Slovenija-Švica in certificirane temperaturno vodene logistične storitve po Evropi.",
   applicationName: "TONIKA 2",
   authors: [{ name: "TONIKA 2 d.o.o." }],
   keywords: [
     "TONIKA 2",
-    "thermo transport",
-    "frigo transport",
+    "hladilni transport",
+    "temperaturno voden transport",
+    "hladilni transport Slovenija Švica",
     "refrigerated transport Slovenia Switzerland",
-    "temperature controlled logistics",
     "international transport Europe"
   ],
   openGraph: {
     type: "website",
     siteName: "TONIKA 2",
-    title: "TONIKA 2 | Premium Thermo Transport Europe",
+    title: "TONIKA 2 | Premium hladilni transport Evropa",
     description:
-      "Temperature-controlled international transport with Swiss precision, real-time monitoring, and certified refrigerated fleet operations.",
-    locale: "sl_SI"
+      "Temperaturno voden mednarodni transport z zanesljivo floto TONIKA 2, švicarskimi relacijami in stalnim nadzorom temperature.",
+    locale: "sl_SI",
+    images: ["/images/hero-alps.webp"]
   },
   twitter: {
     card: "summary_large_image",
-    title: "TONIKA 2 | Premium Thermo Transport Europe",
+    title: "TONIKA 2 | Premium hladilni transport Evropa",
     description:
-      "Premium thermo-frigo logistics between Slovenia, Switzerland, Croatia, Southern EU, and Europe."
+      "Premium hladilni transport med Slovenijo, Švico, Hrvaško, južno EU in Evropo.",
+    images: ["/images/hero-alps.webp"]
   },
   robots: {
     index: true,
@@ -55,6 +57,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="sl" className={`${inter.variable} ${manrope.variable}`}>
+      <head>
+        <meta charSet="UTF-8" />
+      </head>
       <body>{children}</body>
     </html>
   );
