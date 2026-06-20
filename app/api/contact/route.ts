@@ -9,6 +9,8 @@ const schema = z.object({
   email: z.string().trim().email().max(180),
   phone: z.string().trim().max(80).optional(),
   message: z.string().trim().min(8).max(3000),
+  consent: z.preprocess((value) => value === true || value === "true" || value === "on", z.literal(true)),
+  locale: z.string().trim().max(8).optional(),
   website: z.string().trim().max(200).optional()
 });
 
@@ -42,7 +44,7 @@ export async function POST(request: Request) {
     auth: { user, pass }
   });
 
-  const { name, company, email, phone, message } = parsed.data;
+  const { name, company, email, phone, message, locale } = parsed.data;
 
   await transporter.sendMail({
     from,
@@ -56,6 +58,8 @@ export async function POST(request: Request) {
       `Company: ${company || "-"}`,
       `Email: ${email}`,
       `Phone: ${phone || "-"}`,
+      `Locale: ${locale || "-"}`,
+      "GDPR consent: yes",
       "",
       message
     ].join("\n")
